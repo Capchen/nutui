@@ -21,7 +21,7 @@ const nutFunctions = ['showToast', 'showNotify', 'showDialog', 'showImagePreview
 function getNutResolved(name: string, options: NutUIResolverOptions): ComponentResolveResult {
   const { taro = false, autoImport = false } = options;
 
-  const packageName = taro ? '@nutui/nutui-taro' : '@nutui/nutui';
+  const packageName = taro ? '@capchen/nutui-taro' : '@nutui/nutui';
 
   const componentName = autoImport ? name.slice(4) : name;
 
