@@ -1,34 +1,38 @@
 <template>
   <view class="nut-tabs" :class="[direction]" ref="container" id="container">
-    <Nut-Scroll-View
-      :scroll-x="true"
+    <scroll-view
+      :scroll-x="getScrollX"
+      :scroll-y="getScrollY"
       :scroll-with-animation="scrollWithAnimation"
       :scroll-left="scrollLeft"
+      :scroll-top="scrollTop"
       :enable-flex="true"
       :id="`nut-tabs__titles_${name}`"
       class="nut-tabs__titles tabs-scrollview"
-      :class="{ [type]: type, scrollable: titleScroll, [size]: size }"
+      :class="{ [type]: type, scrollable: titleScroll, 'scroll-vertical': getScrollY, [size]: size }"
       :style="tabsNavStyle"
     >
-      <slot v-if="$slots.titles" name="titles"></slot>
-      <template v-else>
-        <view
-          class="nut-tabs__titles-item taro"
-          :style="titleStyle"
-          @click="tabChange(item, index)"
-          :class="{ active: item.paneKey == modelValue, disabled: item.disabled }"
-          v-for="(item, index) in titles"
-          :key="item.paneKey"
-        >
-          <view class="nut-tabs__titles-item__line" :style="tabsActiveStyle" v-if="type == 'line'"></view>
-          <view class="nut-tabs__titles-item__smile" :style="tabsActiveStyle" v-if="type == 'smile'">
-            <JoySmile :color="color" />
+      <view class="nut-tabs__list">
+        <slot v-if="$slots.titles" name="titles"></slot>
+        <template v-else>
+          <view
+            class="nut-tabs__titles-item taro"
+            :style="titleStyle"
+            @click="tabChange(item, index)"
+            :class="{ active: item.paneKey == modelValue, disabled: item.disabled }"
+            v-for="(item, index) in titles"
+            :key="item.paneKey"
+          >
+            <view class="nut-tabs__titles-item__line" :style="tabsActiveStyle" v-if="type == 'line'"></view>
+            <view class="nut-tabs__titles-item__smile" :style="tabsActiveStyle" v-if="type == 'smile'">
+              <JoySmile :color="color" />
+            </view>
+            <view class="nut-tabs__titles-item__text" :class="{ ellipsis: ellipsis }">{{ item.title }} </view>
           </view>
-          <view class="nut-tabs__titles-item__text" :class="{ ellipsis: ellipsis }">{{ item.title }} </view>
-        </view>
-        <view v-if="canShowLabel" class="nut-tabs__titles-item nut-tabs__titles-placeholder"></view>
-      </template>
-    </Nut-Scroll-View>
+          <view v-if="canShowLabel" class="nut-tabs__titles-item nut-tabs__titles-placeholder"></view>
+        </template>
+      </view>
+    </scroll-view>
     <view
       class="nut-tabs__content"
       ref="tabsContentRef"
@@ -48,7 +52,6 @@ import { createComponent } from '@/packages/utils/create';
 import { JoySmile } from '@nutui/icons-vue-taro';
 import { pxCheck } from '@/packages/utils/pxCheck';
 import { TypeOfFun } from '@/packages/utils/util';
-import NutScrollView from '../scrollView/index.taro.vue';
 import { onMounted, provide, VNode, ref, Ref, computed, onActivated, watch, nextTick, CSSProperties } from 'vue';
 import raf from '@/packages/utils/raf';
 import Taro from '@tarojs/taro';
@@ -57,18 +60,17 @@ import { useTabContentTouch } from './hooks';
 import { useTaroRect } from '@/packages/utils/useTaroRect';
 
 export class Title {
-  title: string = '';
+  title = '';
   titleSlot?: VNode[];
-  paneKey: string = '';
-  disabled: boolean = false;
+  paneKey = '';
+  disabled = false;
   constructor() {}
 }
 export type TabsSize = 'large' | 'normal' | 'small';
 const { create } = createComponent('tabs');
 export default create({
   components: {
-    JoySmile,
-    NutScrollView
+    JoySmile
   },
   props: {
     modelValue: {
@@ -175,16 +177,22 @@ export default create({
     const findTabsIndex = (value: string | number) => {
       let index = titles.value.findIndex((item) => item.paneKey == value);
       if (titles.value.length == 0) {
-        console.warn('[NutUI] <Tabs> 当前未找到 TabPane 组件元素 , 请检查 .');
+        // console.warn('[NutUI] <Tabs> 当前未找到 TabPane 组件元素 , 请检查 .');
       } else if (index == -1) {
         // console.warn('[NutUI] <Tabs> 请检查 v-model 值是否为 paneKey ,如 paneKey 未设置，请采用下标控制 .');
       } else {
         currentIndex.value = index;
       }
     };
-
+    const getScrollX = computed(() => {
+      return props.titleScroll && props.direction === 'horizontal';
+    });
+    const getScrollY = computed(() => {
+      return props.titleScroll && props.direction === 'vertical';
+    });
     const titleRef = ref([]) as Ref<HTMLElement[]>;
     const scrollLeft = ref(0);
+    const scrollTop = ref(0);
     const scrollWithAnimation = ref(false);
     const getRect = (selector: string) => {
       return new Promise((resolve) => {
@@ -219,39 +227,60 @@ export default create({
           titleRectRef.value = titleRects;
 
           if (navRectRef.value) {
-            const titlesTotalWidth = titleRects.reduce((prev: number, curr: RectItem) => prev + curr.width, 0);
-            if (titlesTotalWidth > navRectRef.value.width) {
-              canShowLabel.value = true;
+            if (props.direction === 'vertical') {
+              const titlesTotalHeight = titleRects.reduce((prev: number, curr: RectItem) => prev + curr.height, 0);
+              if (titlesTotalHeight > navRectRef.value.height) {
+                canShowLabel.value = true;
+              } else {
+                canShowLabel.value = false;
+              }
             } else {
-              canShowLabel.value = false;
+              const titlesTotalWidth = titleRects.reduce((prev: number, curr: RectItem) => prev + curr.width, 0);
+              if (titlesTotalWidth > navRectRef.value.width) {
+                canShowLabel.value = true;
+              } else {
+                canShowLabel.value = false;
+              }
             }
           }
 
           const titleRect: RectItem = titleRectRef.value[currentIndex.value];
 
-          const left = titleRects
-            .slice(0, currentIndex.value)
-            .reduce((prev: number, curr: RectItem) => prev + curr.width + 20, 31);
-
-          const to = left - (navRectRef.value.width - titleRect.width) / 2;
+          let to = 0;
+          if (props.direction === 'vertical') {
+            const DEFAULT_PADDING = 11;
+            const top = titleRects
+              .slice(0, currentIndex.value)
+              .reduce((prev: number, curr: RectItem) => prev + curr.height + 0, DEFAULT_PADDING);
+            to = top - (navRectRef.value.height - titleRect.height) / 2;
+          } else {
+            const DEFAULT_PADDING = 31;
+            const left = titleRects
+              .slice(0, currentIndex.value)
+              .reduce((prev: number, curr: RectItem) => prev + curr.width + 20, DEFAULT_PADDING);
+            to = left - (navRectRef.value.width - titleRect.width) / 2;
+          }
 
           nextTick(() => {
             scrollWithAnimation.value = true;
           });
 
-          scrollLeftTo(to);
+          scrollDirection(to, props.direction);
         });
       });
     };
 
-    const scrollLeftTo = (to: number) => {
+    const scrollDirection = (to: number, direction: 'horizontal' | 'vertical') => {
       let count = 0;
-      const from = scrollLeft.value;
-
+      const from = direction === 'horizontal' ? scrollLeft.value : scrollTop.value;
       const frames = 1;
 
       function animate() {
-        scrollLeft.value += (to - from) / frames;
+        if (direction === 'horizontal') {
+          scrollLeft.value += (to - from) / frames;
+        } else {
+          scrollTop.value += (to - from) / frames;
+        }
 
         if (++count < frames) {
           raf(animate);
@@ -363,6 +392,9 @@ export default create({
       tabsActiveStyle,
       container,
       scrollLeft,
+      scrollTop,
+      getScrollX,
+      getScrollY,
       scrollWithAnimation,
       canShowLabel,
       refRandomId,

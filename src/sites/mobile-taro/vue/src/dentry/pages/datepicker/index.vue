@@ -59,6 +59,16 @@
       :max-date="maxDate"
       @confirm="confirm"
     ></nut-date-picker>
+    <h2>选择时分</h2>
+    <!-- 选择时分 -->
+    <nut-date-picker
+      v-model="currentDate4"
+      title="时间选择"
+      type="hour-minute"
+      :min-date="minDate"
+      :max-date="maxDate"
+      @confirm="confirm"
+    ></nut-date-picker>
     <h2>格式化选项</h2>
     <!-- 格式化选项 -->
     <nut-date-picker
@@ -135,7 +145,7 @@ export default {
           option.text += '月';
           break;
         case 'day':
-          option.text += '月';
+          option.text += '日';
           break;
         case 'hour':
           option.text += '时';
@@ -158,7 +168,7 @@ export default {
           option.text += '月';
           break;
         case 'day':
-          option.text += '月';
+          option.text += '日';
           break;
         case 'hour':
           option.text += '时';

@@ -1,21 +1,6 @@
-import { config, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import Popover from '../index.vue';
-import NutPopup from '../../popup/index.vue';
-import NutOverlay from '../../overlay/index.vue';
-import NutIcon from '../../icon/index.vue';
 import { nextTick, reactive } from 'vue';
-
-beforeAll(() => {
-  config.global.components = {
-    NutIcon,
-    NutPopup,
-    NutOverlay
-  };
-});
-
-afterAll(() => {
-  config.global.components = {};
-});
 
 const iconItemList = [{ name: 'option1' }, { name: 'option2' }, { name: 'option3' }];
 
@@ -29,8 +14,7 @@ test('first render', async () => {
   const wrapper = mount(Popover, {
     props: {
       visible: true,
-      list: iconItemList,
-      teleportDisable: false
+      list: iconItemList
     }
   });
   await nextTick();
@@ -42,7 +26,6 @@ test('Props theme dark', async () => {
     props: {
       visible: true,
       list: iconItemList,
-      teleportDisable: false,
       theme: 'dark'
     }
   });
@@ -54,8 +37,7 @@ test('should not emit select event when the action is disabled', async () => {
   const wrapper = mount(Popover, {
     props: {
       visible: true,
-      list: listDisabled,
-      teleportDisable: false
+      list: listDisabled
     }
   });
   await nextTick();
@@ -69,8 +51,7 @@ test('should close popover when clicking the action', async () => {
   const wrapper = mount(Popover, {
     props: {
       visible: true,
-      list: iconItemList,
-      teleportDisable: false
+      list: iconItemList
     }
   });
   await nextTick();
@@ -88,7 +69,6 @@ test('Set Props Position', async () => {
     props: {
       visible: true,
       list: iconItemList,
-      teleportDisable: false,
       location: 'top-start'
     }
   });

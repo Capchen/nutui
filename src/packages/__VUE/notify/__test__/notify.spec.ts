@@ -20,11 +20,13 @@ describe('Notify', () => {
   test('base notify message', async () => {
     const wrapper = mount(Notify, {
       props: {
-        teleportDisable: false,
-        message: '测试文案'
+        teleportDisable: false
+      },
+      slots: {
+        default: '测试文案'
       }
     });
-    expect(wrapper.html()).toContain('<!--teleport start-->');
+    expect(wrapper.html()).toMatchSnapshot();
   });
   test('should be displayed after setting the type', async () => {
     const wrapper = mount(Notify, {
@@ -61,10 +63,10 @@ describe('Notify', () => {
       props: {
         teleportDisable: false,
         visible: true,
-        duration: 3000
+        duration: 50
       }
     });
-    await sleep(3001);
+    await sleep(51);
     const notify = wrapper.find('.nut-popup').find('.nut-notify');
     expect((notify.element as HTMLElement).style.display).toEqual('');
   });

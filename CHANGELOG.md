@@ -1,3 +1,68 @@
+## v4.0.7
+
+`2023-05-12`
+
+NutUI 非常感谢您对开源事业做出的贡献！🌷🌷🌷
+本次社区贡献者 @ntnyq
+
+* :zap: feat(animate): add duration property (#2280)
+* :zap: feat(button): add formType for Taro H5 (#2288)
+* :bug: fix(switch): inactiveValue 为非 falsy 值无法显示 (#2258)
+* :bug: fix(tabs): tab-title active font-weight #2268
+* :bug: fix(sidenavbar): style of async data (#2279)
+* :bug: fix(addressList): failed to emit click-item (#2281)
+* :bug: fix(form): reset min-width style for label-width (#2282)
+* :bug: fix(tour): remove mask after close (#2283)
+
+## v4.0.6
+
+`2023-04-21`
+
+NutUI 非常感谢您对开源事业做出的贡献！🌷🌷🌷
+本次社区贡献者 @kingyang @blue0728
+
+* :zap: feat(input): add focus, blur, select ref (#2250)
+* :bug: fix(input): 传入 class 被忽略问题 #2242 (#2243) @kingyang
+* :bug: fix(Menu): 修复 MenuItem class 设置无效问题 (#2236) @blue0728
+* :bug: fix(datepicker): 修复小程序下 v-model 修改异常问题
+* :bug: fix(checkbox): fix toggle all demo #2237
+* :bug: fix(rate): 修复定位方式导致的异常空白高度问题 (#2255)
+* :bug: fix(picker): 修复平铺模式下溢出省略失效问题 (#2247)
+* :bug: fix(dialog): remove hidden class after close #2211 (#2241)
+* :rocket: chore: upgrade Taro to 3.6.2+
+* :rocket: chore: move yarn to pnpm for Taro Demo
+
+## v4.0.5
+
+`2023-04-07`
+
+NutUI 非常感谢您对开源事业做出的贡献！🌷🌷🌷
+本次社区贡献者 @gyt95 @wh-if
+
+* :zap: feat(tabs): support vertical automatic scrolling (#2199) @gyt95
+* :zap: feat(datepicker): 支持选择时分 #2167
+* :bug: fix(checkbox): checkbox 减少时 group 内数据同步更新 (#2190) #2189 @wh-if
+* :bug: fix(tabs): 修复最后一项展示不全的问题 #2214
+* :bug: fix(tabs): 限制 tabs 导航滚动方向 #2208
+* :bug: fix(input): 修复透传原生属性后 click 失效的问题
+* :bug: fix(datepicker): 修复手动修改 modelValue 无效问题 #2205
+
+## v4.0.4
+
+`2023-03-24`
+
+NutUI 非常感谢您对开源事业做出的贡献！🌷🌷🌷
+本次社区贡献者 @ntnyq @hlbj105 
+
+* :zap: feat(picker): 支持透传 picker-view 属性 #2142 #2143 #2161 @eiinu
+* :bug: fix(tabbar): taro remove href props @Drjingfubo
+* :bug: fix: make peer dep optional (#2182) @ntnyq
+* :bug: fix(elevator): 修复 iOS 上错误滑动到底部的问题 #2149 @eiinu
+* :bug: fix(pullRefresh): 修复 @refresh 回调两次的问题 (#2153) @hlbj105
+* :bug: fix(input): 修复 input 校验格式化错误 #2178 (#2193) @eiinu
+* :bug: fix(tabs): 修复京东小程序下 tab 栏布局错误 @eiinu
+* :bug: fix(dialog): 标题暗黑模式适配修复 @eiinu
+
 ## v4.0.3
 
 `2023-03-10`

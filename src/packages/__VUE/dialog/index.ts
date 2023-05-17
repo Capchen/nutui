@@ -1,5 +1,5 @@
 import Dialog from './index.vue';
-import { h, VNode, CSSProperties, Component } from 'vue';
+import { h, VNode, CSSProperties, Component, nextTick } from 'vue';
 import Popup from '../popup/index.vue';
 import Button from '../button/index.vue';
 import Overlay from '../overlay/index.vue';
@@ -44,12 +44,14 @@ class DialogFunction {
     const { unmount } = CreateComponent(options, {
       name: 'dialog',
       components: [Popup, Button, Overlay],
-      wrapper: (elWarp: any, root: any) => {
+      wrapper: (elWrap: any, root: any) => {
         return {
           setup() {
             options.onUpdate = (val: boolean) => {
-              if (val == false) {
-                unmount();
+              if (val === false) {
+                nextTick(() => {
+                  unmount();
+                });
               }
             };
             if (options?.onOpened) {

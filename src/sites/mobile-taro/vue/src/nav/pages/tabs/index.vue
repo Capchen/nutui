@@ -25,7 +25,7 @@
       <nut-tab-pane title="Tab 2" pane-key="1" :disabled="true"> Tab 2 </nut-tab-pane>
       <nut-tab-pane title="Tab 3" pane-key="2"> Tab 3 </nut-tab-pane>
     </nut-tabs>
-    <h2>Tabpane 自动高度</h2>
+    <h2>Tab Pane 自动高度</h2>
     <nut-tabs v-model="state.tab2value" :auto-height="true">
       <nut-tab-pane title="Tab 1" pane-key="0">
         <p>Tab 1</p>
@@ -41,9 +41,20 @@
       <nut-tab-pane v-for="item in state.list3" :title="'Tab ' + item"> Tab {{ item }} </nut-tab-pane>
     </nut-tabs>
 
-    <h2>数量多,滚动操作</h2>
+    <h2>数量多，滚动操作（横向）</h2>
     <nut-tabs v-model="state.tab4value" title-scroll title-gutter="10" name="tab4value">
-      <nut-tab-pane v-for="item in state.list4" :pane-key="item" :title="'Tab ' + item"> Tab {{ item }} </nut-tab-pane>
+      <nut-tab-pane v-for="item in state.list4" :title="'Tab ' + item"> Tab {{ item }} </nut-tab-pane>
+    </nut-tabs>
+    <h2>数量多，滚动操作（纵向）</h2>
+    <nut-tabs
+      v-model="state.tab4value"
+      title-scroll
+      title-gutter="10"
+      name="tab4valueVertical"
+      direction="vertical"
+      style="height: 220px"
+    >
+      <nut-tab-pane v-for="item in state.list4" :title="'Tab ' + item"> Tab {{ item }} </nut-tab-pane>
     </nut-tabs>
     <h2>左右布局</h2>
     <nut-tabs style="height: 300px" v-model="state.tab5value" title-scroll direction="vertical">

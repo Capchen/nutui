@@ -1,5 +1,5 @@
 <template>
-  <view :class="classes">
+  <view :class="classes" @click="onClick">
     <view class="nut-input-value">
       <view class="nut-input-inner">
         <view class="nut-input-left-box">
@@ -36,16 +36,10 @@
           class="nut-input-clear-box"
           v-if="clearable && !readonly"
           v-show="(active || showClearIcon) && modelValue.length > 0"
+          @click="clear"
         >
           <slot name="clear">
-            <MaskClose
-              class="nut-input-clear"
-              v-bind="$attrs"
-              :size="clearSize"
-              :width="clearSize"
-              :height="clearSize"
-              @click="clear"
-            >
+            <MaskClose class="nut-input-clear" v-bind="$attrs" :size="clearSize" :width="clearSize" :height="clearSize">
             </MaskClose>
           </slot>
         </view>
@@ -149,11 +143,16 @@ export default create({
     showClearIcon: {
       type: Boolean,
       default: false
+    },
+    class: {
+      type: String,
+      default: ''
     }
   },
   components: { MaskClose },
 
-  emits: ['update:modelValue', 'blur', 'focus', 'clear', 'keypress', 'click-input'],
+  emits: ['update:modelValue', 'blur', 'focus', 'clear', 'keypress', 'click', 'click-input'],
+  expose: ['focus', 'blur', 'select'],
 
   setup(props, { emit, slots }) {
     const active = ref(false);
@@ -180,7 +179,8 @@ export default create({
         [`${prefixCls}--disabled`]: props.disabled,
         [`${prefixCls}--required`]: props.required,
         [`${prefixCls}--error`]: props.error,
-        [`${prefixCls}--border`]: props.border
+        [`${prefixCls}--border`]: props.border,
+        [props.class]: !!props.class
       };
     });
 
@@ -289,6 +289,11 @@ export default create({
       }
       emit('click-input', event);
     };
+
+    const onClick = (event: MouseEvent) => {
+      emit('click', event);
+    };
+
     const startComposing = ({ target }: Event) => {
       (target as InputTarget)!.composing = true;
     };
@@ -311,6 +316,18 @@ export default create({
       updateValue(getModelValue(), props.formatTrigger);
     });
 
+    const focus = () => {
+      inputRef.value?.focus();
+    };
+
+    const blur = () => {
+      inputRef.value?.blur();
+    };
+
+    const select = () => {
+      inputRef.value?.select();
+    };
+
     return {
       renderInput,
       inputRef,
@@ -324,7 +341,11 @@ export default create({
       clear,
       startComposing,
       endComposing,
-      onClickInput
+      onClick,
+      onClickInput,
+      focus,
+      blur,
+      select
     };
   }
 });

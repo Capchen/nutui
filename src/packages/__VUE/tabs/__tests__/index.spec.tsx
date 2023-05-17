@@ -1,4 +1,4 @@
-import { config, DOMWrapper, mount } from '@vue/test-utils';
+import { config, mount } from '@vue/test-utils';
 import Tabs from '../index.vue';
 import TabPane from './../../tabpane/index.vue';
 import { nextTick, reactive } from 'vue';
@@ -54,23 +54,23 @@ test('base tabs props', async () => {
 });
 
 test('base other props', async () => {
-  const wrapper = mount(Tabs, {
-    props: {
-      'animated-time': 500,
-      'title-gutter': '20px'
-    },
+  const wrapper = mount({
     components: {
       'nut-tabs': Tabs,
       'nut-tab-pane': TabPane
-    }
+    },
+    template: `
+      <nut-tabs animatedTime="500" titleGutter="20">
+        <nut-tab-pane paneKey="1">123</nut-tab-pane>
+        <nut-tab-pane paneKey="2">456</nut-tab-pane>
+      </nut-tabs>
+    `
   });
   await nextTick();
   const stepItem = wrapper.find('.nut-tabs__content');
   expect((stepItem.element as HTMLElement).style.transitionDuration).toEqual('500ms');
-  setTimeout(() => {
-    const stepItem1 = wrapper.find('.nut-tabs__titles-item');
-    expect((stepItem1.element as HTMLElement).style.marginLeft).toEqual('20px');
-  }, 0);
+  const stepItem1 = wrapper.find('.nut-tabs__titles-item');
+  expect((stepItem1.element as HTMLElement).style.marginLeft).toEqual('20px');
 });
 
 test('base Tabs Slots', async () => {

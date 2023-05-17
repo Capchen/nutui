@@ -1,5 +1,6 @@
 import { ref, onMounted, reactive, watch, computed, CSSProperties, toRefs } from 'vue';
 import { createComponent } from '@/packages/utils/create';
+import { pxCheck } from '@/packages/utils/pxCheck';
 const { translate } = createComponent('picker');
 import { usePicker } from './usePicker';
 import column from './Column.vue';
@@ -128,7 +129,7 @@ export const componentWeapp = {
 
       // 选择的是哪个 option
       changeHandler(changeIndex, columnsList.value[changeIndex][data.detail.value[changeIndex]]);
-      console.log('设置默认值');
+      // console.log('设置默认值');
 
       defaultIndexes.value = defaultValuesConvert();
     };
@@ -186,7 +187,8 @@ export const componentWeapp = {
       handlePickstart,
       translate,
       handlePickend,
-      pickerViewStyles
+      pickerViewStyles,
+      pxCheck
     };
   }
 };

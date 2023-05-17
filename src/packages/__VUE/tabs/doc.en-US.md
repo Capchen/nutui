@@ -136,7 +136,7 @@ export default {
 ```
 :::
 
-### Tabpane height auto
+### TabPane height auto
 
 Automatic height. When set to `true`, `nut-tabs` and `nut-tabs__content` will change with the height of the current `nut-tab-pane`.
 
@@ -198,6 +198,8 @@ export default {
 :::
 
 ### A large number of scrolling operations
+
+The automatic scrolling direction of the title bar can be modified through the `direction` property.
 
 In the `taro` environment, `name` must be set to enable the automatic scrolling function of the title bar.
 
@@ -388,7 +390,7 @@ export default {
 | titles  | Custom Titles Area     |
 | default | Custom Default Content |
 
-### Tabpane Props
+### TabPane Props
 
 | Attribute | Description                       | Type    | Default          |
 |-----------|-----------------------------------|---------|------------------|
@@ -397,7 +399,7 @@ export default {
 | disabled  | whether to disable tabs           | boolean | false            |
 
 
-### Tabpane Slots
+### TabPane Slots
 
 | Name    | Description            |
 |---------|------------------------|

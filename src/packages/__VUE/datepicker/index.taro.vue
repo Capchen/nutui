@@ -24,6 +24,7 @@
 import { toRefs, watch, computed, reactive, onBeforeMount } from 'vue';
 import type { PropType } from 'vue';
 import Picker from '../picker/index.taro.vue';
+import { PickerOption } from '../picker/types';
 import { createComponent } from '@/packages/utils/create';
 import { Formatter, Filter } from './type';
 import { padZero, isDate as isDateU } from '@/packages/utils/util';
@@ -112,13 +113,13 @@ export default create({
       default: 36
     }
   },
-  emits: ['click', 'cancel', 'change', 'confirm', 'update:moduleValue'],
+  emits: ['click', 'cancel', 'change', 'confirm', 'update:modelValue'],
 
   setup(props, { emit }) {
     const state = reactive({
       currentDate: new Date(),
       title: props.title,
-      selectedValue: []
+      selectedValue: [] as Array<any>
     });
     const formatValue = (value: Date) => {
       if (!isDate(value)) {
@@ -201,28 +202,7 @@ export default create({
           range: [minSeconds, maxSeconds]
         }
       ];
-
-      switch (props.type) {
-        case 'date':
-          result = result.slice(0, 3);
-          break;
-        case 'datetime':
-          result = result.slice(0, 5);
-          break;
-        case 'time':
-          result = result.slice(3, 6);
-          break;
-        case 'year-month':
-          result = result.slice(0, 2);
-          break;
-        case 'month-day':
-          result = result.slice(1, 3);
-          break;
-        case 'datehour':
-          result = result.slice(0, 4);
-          break;
-      }
-      return result;
+      return generateList(result);
     });
 
     const columns = computed(() => {
@@ -239,25 +219,24 @@ export default create({
     }: {
       columnIndex: number;
       selectedValue: (string | number)[];
-      selectedOptions: import('../picker/types').PickerOption[];
+      selectedOptions: PickerOption[];
     }) => {
       if (['date', 'datetime', 'datehour', 'month-day', 'year-month'].includes(props.type)) {
         let formatDate: (number | string)[] = [];
         selectedValue.forEach((item) => {
           formatDate.push(item);
         });
-        if (props.type == 'month-day') {
-          formatDate.unshift(new Date(props.modelValue || props.minDate || props.maxDate).getFullYear());
+        if (props.type == 'month-day' && formatDate.length < 3) {
+          formatDate.unshift(new Date(state.currentDate || props.minDate || props.maxDate).getFullYear());
         }
         if (props.type == 'year-month' && formatDate.length < 3) {
-          formatDate.push(new Date(props.modelValue || props.minDate || props.maxDate).getDate());
+          formatDate.push(new Date(state.currentDate || props.minDate || props.maxDate).getDate());
         }
 
         const year = Number(formatDate[0]);
         const month = Number(formatDate[1]) - 1;
         const day = Math.min(Number(formatDate[2]), getMonthEndDay(Number(formatDate[0]), Number(formatDate[1])));
         let date: Date | null = null;
-
         if (props.type === 'date' || props.type === 'month-day' || props.type === 'year-month') {
           date = new Date(year, month, day);
         } else if (props.type === 'datetime') {
@@ -284,9 +263,9 @@ export default create({
       return fOption;
     };
 
+    // min 最小值  max 最大值  val  当前显示的值   type 类型（year、month、day、time）
     const generateValue = (min: number, max: number, val: number | string, type: string, columnIndex: number) => {
-      // if (!(max > min)) return;
-      const arr: Array<import('../picker/types').PickerOption> = [];
+      const arr: Array<PickerOption> = [];
       let index = 0;
       while (min <= max) {
         arr.push(formatterOption(type, min));
@@ -301,7 +280,6 @@ export default create({
           index++;
         }
       }
-
       (state.selectedValue as any)[columnIndex] = arr[index].value;
       return props.filter ? props.filter(type, arr) : arr;
     };
@@ -331,6 +309,45 @@ export default create({
       emit('confirm', val);
     };
 
+    const generateList = (list: Array<any>) => {
+      switch (props.type) {
+        case 'date':
+          list = list.slice(0, 3);
+          break;
+        case 'datetime':
+          list = list.slice(0, 5);
+          break;
+        case 'time':
+          list = list.slice(3, 6);
+          break;
+        case 'year-month':
+          list = list.slice(0, 2);
+          break;
+        case 'month-day':
+          list = list.slice(1, 3);
+          break;
+        case 'datehour':
+          list = list.slice(0, 4);
+          break;
+        case 'hour-minute':
+          list = list.slice(3, 5);
+          break;
+      }
+      return list;
+    };
+
+    const getSelectedValue = (time: Date) => {
+      const res = [
+        time.getFullYear(),
+        time.getMonth() + 1,
+        time.getDate(),
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds()
+      ];
+      return generateList(res.map((i) => String(i)));
+    };
+
     onBeforeMount(() => {
       state.currentDate = formatValue(props.modelValue);
     });
@@ -338,7 +355,22 @@ export default create({
     watch(
       () => props.modelValue,
       (value) => {
-        state.currentDate = formatValue(value);
+        const newValues = formatValue(value);
+        const isSameValue = JSON.stringify(newValues) === JSON.stringify(state.currentDate);
+        if (!isSameValue) {
+          state.currentDate = newValues;
+          state.selectedValue = getSelectedValue(newValues);
+        }
+      }
+    );
+
+    watch(
+      () => state.currentDate,
+      (newValues) => {
+        const isSameValue = JSON.stringify(newValues) === JSON.stringify(props.modelValue);
+        if (!isSameValue) {
+          emit('update:modelValue', newValues);
+        }
       }
     );
 

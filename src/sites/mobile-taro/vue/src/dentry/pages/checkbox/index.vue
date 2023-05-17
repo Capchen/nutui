@@ -185,7 +185,6 @@ export default {
         data.checkbox10 = true;
       } else if (label.length && label.length < 4) {
         data.indeterminate = true;
-        data.checkbox10 = true;
       } else {
         data.checkbox10 = false;
       }

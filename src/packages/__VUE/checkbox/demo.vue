@@ -248,13 +248,11 @@ export default createDemo({
     };
 
     const changeBox6 = (label: string[]) => {
-      console.log(11);
       if (label.length === 4) {
         data.indeterminate = false;
         data.checkbox10 = true;
       } else if (label.length && label.length < 4) {
         data.indeterminate = true;
-        data.checkbox10 = true;
       } else {
         data.checkbox10 = false;
       }

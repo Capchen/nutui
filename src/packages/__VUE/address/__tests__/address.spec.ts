@@ -1,22 +1,10 @@
-import { config, mount } from '@vue/test-utils';
-import { nextTick, toRefs, reactive } from 'vue';
-import NutIcon from '../../icon/index.vue';
-import NutPopup from '../../popup/index.vue';
-import NutElevator from '../../elevator/index.vue';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Address from '../index.vue';
 import { addressListData, addressExistData } from '../address-list';
+import { mockElementMethod } from '@/packages/utils/test';
 
-beforeAll(() => {
-  config.global.components = {
-    NutIcon,
-    NutPopup,
-    NutElevator
-  };
-});
-
-afterAll(() => {
-  config.global.components = {};
-});
+mockElementMethod(Element, 'scrollTo');
 
 test('address render', async () => {
   const wrapper = mount(Address, {
@@ -45,8 +33,10 @@ test('choose address item', async () => {
       teleportDisable: false
     }
   });
+  const fn = mockElementMethod(Element, 'scrollTo');
   wrapper.find('.nut-address__detail-item').trigger('click');
   await nextTick();
+  expect(fn).toHaveBeenCalledTimes(1);
   expect(wrapper.find('.nut-address__region-item ').text()).toEqual('北京');
 });
 
@@ -113,7 +103,7 @@ test('Exist address & list address', async () => {
     }
   });
   await nextTick();
-  const changeBtn = wrapper.find('.choose-other');
+  const changeBtn = wrapper.find('.nut-address__exist-choose-btn');
   expect(changeBtn.exists()).toBeTruthy();
 
   changeBtn.trigger('click');

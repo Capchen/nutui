@@ -31,7 +31,7 @@
     <template v-else>
       <view
         class="nut-tabs__titles"
-        :class="{ [type]: type, scrollable: titleScroll, [size]: size }"
+        :class="{ [type]: type, scrollable: titleScroll, 'scroll-vertical': getScrollY, [size]: size }"
         :style="tabsNavStyle"
         ref="navRef"
       >
@@ -76,10 +76,10 @@ import { useRect } from '@/packages/utils/useRect';
 import { onMounted, provide, VNode, ref, Ref, computed, onActivated, watch, nextTick, CSSProperties } from 'vue';
 import raf from '@/packages/utils/raf';
 export class Title {
-  title: string = '';
+  title = '';
   titleSlot?: VNode[];
-  paneKey: string = '';
-  disabled: boolean = false;
+  paneKey = '';
+  disabled = false;
   constructor() {}
 }
 export type TabsSize = 'large' | 'normal' | 'small';
@@ -192,7 +192,7 @@ export default create({
     const findTabsIndex = (value: string | number) => {
       let index = titles.value.findIndex((item) => item.paneKey == value);
       if (titles.value.length == 0) {
-        console.warn('[NutUI] <Tabs> 当前未找到 TabPane 组件元素 , 请检查 .');
+        // console.warn('[NutUI] <Tabs> 当前未找到 TabPane 组件元素 , 请检查 .');
       } else if (index == -1) {
         // console.warn('[NutUI] <Tabs> 请检查 v-model 值是否为 paneKey ,如 paneKey 未设置，请采用下标控制 .');
       } else {
@@ -200,6 +200,9 @@ export default create({
       }
     };
 
+    const getScrollY = computed(() => {
+      return props.titleScroll && props.direction === 'vertical';
+    });
     const navRef = ref<HTMLElement>();
     const titleRef = ref([]) as Ref<HTMLElement[]>;
     const scrollIntoView = (immediate?: boolean) => {
@@ -209,18 +212,29 @@ export default create({
         return;
       }
       const title = _titles[currentIndex.value];
-      const to = title.offsetLeft - (nav.offsetWidth - title.offsetWidth) / 2;
-      scrollLeftTo(nav, to, immediate ? 0 : 0.3);
+
+      let to = 0;
+      if (props.direction === 'vertical') {
+        const runTop = title.offsetTop - nav.offsetTop + 10;
+        to = runTop - (nav.offsetHeight - title.offsetHeight) / 2;
+      } else {
+        to = title.offsetLeft - (nav.offsetWidth - title.offsetWidth) / 2;
+      }
+
+      scrollDirection(nav, to, immediate ? 0 : 0.3, props.direction);
     };
 
-    const scrollLeftTo = (nav: any, to: number, duration: number) => {
+    const scrollDirection = (nav: any, to: number, duration: number, direction: 'horizontal' | 'vertical') => {
       let count = 0;
-      const from = nav.scrollLeft;
-
+      const from = direction === 'horizontal' ? nav.scrollLeft : nav.scrollTop;
       const frames = duration === 0 ? 1 : Math.round((duration * 1000) / 16);
 
       function animate() {
-        nav.scrollLeft += (to - from) / frames;
+        if (direction === 'horizontal') {
+          nav.scrollLeft += (to - from) / frames;
+        } else {
+          nav.scrollTop += (to - from) / frames;
+        }
 
         if (++count < frames) {
           raf(animate);
@@ -346,6 +360,7 @@ export default create({
       titleStyle,
       tabsActiveStyle,
       container,
+      getScrollY,
       onStickyScroll,
       ...tabMethods,
       ...touchMethods

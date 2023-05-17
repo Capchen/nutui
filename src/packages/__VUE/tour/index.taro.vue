@@ -7,6 +7,7 @@
         class="nut-tour-mask"
         :class="[mask ? (showPopup[i] ? '' : 'nut-tour-mask-hidden') : 'nut-tour-mask-none']"
         :style="maskStyles[i]"
+        v-if="showTour"
         :id="`nut-tour-popid${i}${refRandomId}`"
       ></view>
       <nut-popover
